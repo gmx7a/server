@@ -1,0 +1,83 @@
+slmgr /rearm - in Windows first
+
+Ip Address :
+
+Ubuntu :
+
+hostname -I
+
+Windows :
+
+ipconfig
+
+ping ubuntu
+ping windows
+
+Next Step For Screenshot :
+
+Ubuntu :
+
+sudo apt update
+sudo apt install ssh
+
+sudo systemctl status ssh
+
+Windows :
+
+ssh username@ipaddress
+
+Part 2
+Next Part : Example
+
+mkdir department
+
+cd department
+
+sudo groupadd hr - create group
+sudo groupadd siti
+
+sudo adduser name
+
+sudo usermod -aG hr/it name - add users in that group
+
+tail -5 /etc/group - list of what we created
+
+simple to locate if want :
+grep hr /etc/group
+grep it /etc/group
+
+to set owner and group :
+sudo chown ali:hr /home/username/department/hr
+sudo chown siti:it /home/username/department/it
+
+to set permission :
+sudo chmod 770 /home/username/department/hr
+sudo chmod 770 /home/username/department/it
+
+check permission :
+ls -ld /home/username/department/hr
+ls -ld /home/username/department/it
+
+
+create txt file :
+nano yourname.txt
+Save:
+
+CTRL + O
+Enter
+CTRL + X
+
+view txt file :
+cat yourname.txt
+
+Display the windowing system :
+windowing system :
+echo $XDG_SESSION_TYPE
+desktop environment :
+echo $XDG_CURRENT_DESKTOP
+current default shell :
+echo $SHELL
+
+
+
+PART 3
