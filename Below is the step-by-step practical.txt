@@ -1,0 +1,387 @@
+Below is the step-by-step practical instruction you can follow for your test.
+________________________________________
+PART 1: Virtual Server Deployment and Network Setup
+1. Create VirtualBox NAT Network
+1.	Open VirtualBox
+2.	Go to Tools
+3.	Click Network
+4.	Go to NAT Networks
+5.	Click Create
+6.	Rename it, for example:
+Teralogic_NAT
+7.	Make sure Enable DHCP is ticked.
+Example network:
+10.0.2.0/24
+________________________________________
+2. Create Ubuntu Server VM
+Recommended hardware:
+Name: Ubuntu Server
+RAM: 2048 MB
+CPU: 1 or 2 cores
+Storage: 20 GB
+Network: NAT Network
+Adapter: Teralogic_NAT
+Steps:
+1.	Click New
+2.	Name: Ubuntu Server
+3.	Select Ubuntu ISO
+4.	Set RAM: 2048 MB
+5.	Set CPU: 1 or 2
+6.	Create virtual hard disk: 20 GB
+7.	Install Ubuntu Server normally.
+After installation, login and check IP:
+ip a
+or:
+hostname -I
+Take screenshot.
+________________________________________
+3. Create Windows Server VM
+Recommended hardware:
+Name: Windows Server
+RAM: 4096 MB
+CPU: 2 cores
+Storage: 50 GB
+Network: NAT Network
+Adapter: Teralogic_NAT
+Steps:
+1.	Click New
+2.	Name: Windows Server
+3.	Select Windows Server ISO
+4.	Set RAM: 4096 MB
+5.	Set CPU: 2
+6.	Create virtual hard disk: 50 GB
+7.	Install Windows Server normally.
+Check IP in Command Prompt:
+ipconfig
+Take screenshot.
+________________________________________
+4. Set Both VM Network to NAT Network
+For Ubuntu Server:
+1.	Settings
+2.	Network
+3.	Adapter 1
+4.	Attached to: NAT Network
+5.	Name: Teralogic_NAT
+For Windows Server:
+1.	Settings
+2.	Network
+3.	Adapter 1
+4.	Attached to: NAT Network
+5.	Name: Teralogic_NAT
+________________________________________
+5. Test Connection Between Servers
+From Ubuntu, ping Windows Server IP:
+ping <Windows_Server_IP>
+Example:
+ping 10.0.2.5
+From Windows Server, ping Ubuntu IP:
+ping <Ubuntu_IP>
+Example:
+ping 10.0.2.4
+Take screenshot as proof.
+________________________________________
+6. Remote Access to Ubuntu Using SSH
+On Ubuntu Server, install SSH:
+sudo apt update
+sudo apt install openssh-server -y
+Check SSH status:
+sudo systemctl status ssh
+Enable SSH:
+sudo systemctl enable ssh
+sudo systemctl start ssh
+Check Ubuntu IP:
+hostname -I
+From host machine, use Command Prompt or PowerShell:
+ssh username@Ubuntu_IP
+Example:
+ssh farid@10.0.2.4
+Or use your Ubuntu login username:
+ssh student@10.0.2.4
+Take screenshot after successful login.
+________________________________________
+7. Remote Access to Windows Server Using RDP
+On Windows Server:
+1.	Open Server Manager
+2.	Click Local Server
+3.	Find Remote Desktop
+4.	Click Disabled
+5.	Select:
+Allow remote connections to this computer
+6.	Apply and OK.
+Check Windows Server IP:
+ipconfig
+From host machine:
+1.	Press Windows + R
+2.	Type:
+mstsc
+3.	Enter Windows Server IP.
+4.	Login using Administrator account.
+Take screenshot after successful RDP login.
+________________________________________
+PART 2: Linux System Administration and File Management
+1. Create Project Directories
+Login to Ubuntu Server.
+Create main project folders:
+sudo mkdir -p /srv/projects/development
+sudo mkdir -p /srv/projects/support
+Check folders:
+ls -l /srv/projects
+________________________________________
+2. Create Groups
+Create development group:
+sudo groupadd devgroup
+Create support group:
+sudo groupadd supportgroup
+Check groups:
+getent group devgroup
+getent group supportgroup
+________________________________________
+3. Create Users and Assign to Groups
+Create user farid and add to development group:
+sudo useradd -m -G devgroup farid
+Create user lina and add to support group:
+sudo useradd -m -G supportgroup lina
+Create user hafiz and add to development group:
+sudo useradd -m -G devgroup hafiz
+Set password for farid:
+sudo passwd farid
+Set password for lina:
+sudo passwd lina
+Set password for hafiz:
+sudo passwd hafiz
+Check user groups:
+groups farid
+groups lina
+groups hafiz
+________________________________________
+Important Note About “siti”
+The question says:
+Assign siti as owner of /srv/projects/support
+But the user list does not mention siti. To be safe, you can create siti too:
+sudo useradd -m -G supportgroup siti
+sudo passwd siti
+Then check:
+groups siti
+If your lecturer says use lina instead, use lina as owner. But if following the question exactly, create siti.
+________________________________________
+4. Assign Ownership
+For development folder:
+sudo chown farid:devgroup /srv/projects/development
+For support folder using siti:
+sudo chown siti:supportgroup /srv/projects/support
+Alternative if lecturer wants lina:
+sudo chown lina:supportgroup /srv/projects/support
+Check ownership:
+ls -ld /srv/projects/development
+ls -ld /srv/projects/support
+________________________________________
+5. Apply Permissions
+Only group members can access their respective directories. Other users are denied.
+Development folder:
+sudo chmod 770 /srv/projects/development
+Support folder:
+sudo chmod 770 /srv/projects/support
+Check permissions:
+ls -ld /srv/projects/development /srv/projects/support
+Expected permission:
+drwxrwx--- 
+Meaning:
+Owner = read, write, execute
+Group = read, write, execute
+Others = no permission
+________________________________________
+6. Test Access Control
+Test as farid:
+su - farid
+cd /srv/projects/development
+This should work.
+Try access support:
+cd /srv/projects/support
+This should show:
+Permission denied
+Exit farid:
+exit
+Test as lina:
+su - lina
+cd /srv/projects/support
+This should work.
+Try access development:
+cd /srv/projects/development
+This should show:
+Permission denied
+Exit:
+exit
+Take screenshot.
+________________________________________
+7. Create Reports Directory
+Create reports folder:
+sudo mkdir -p /srv/projects/reports
+Create report file:
+sudo nano /srv/projects/reports/report.txt
+Add this text:
+/home/projects/development
+/home/projects/support
+Your Name
+Your Matric No.
+Example:
+/home/projects/development
+/home/projects/support
+Ahmad Bin Ali
+12DDT23F1001
+Save in nano:
+CTRL + O
+Enter
+CTRL + X
+Display file content:
+cat /srv/projects/reports/report.txt
+Take screenshot.
+________________________________________
+8. Display Required System Information
+a. Current shell
+echo $SHELL
+b. System hostname
+hostname
+c. Logged-in user
+whoami
+d. OS version
+lsb_release -a
+If lsb_release not found:
+cat /etc/os-release
+Take screenshot.
+________________________________________
+PART 3: Windows Server Administration and Resource Sharing
+Method 1: GUI Method
+1. Install Active Directory Domain Services
+1.	Open Server Manager
+2.	Click Manage
+3.	Click Add Roles and Features
+4.	Choose Role-based or feature-based installation
+5.	Select your server
+6.	Tick:
+Active Directory Domain Services
+7.	Click Add Features
+8.	Click Next
+9.	Click Install
+Wait until installation finishes.
+________________________________________
+2. Promote Server to Domain Controller
+1.	In Server Manager, click the notification flag.
+2.	Click:
+Promote this server to a domain controller
+3.	Select:
+Add a new forest
+4.	Root domain name:
+jtmk.net
+5.	Set DSRM password.
+6.	Click Next until install.
+7.	Server will restart.
+After restart, login as:
+JTMK\Administrator
+or:
+Administrator
+Take screenshot showing domain name.
+________________________________________
+3. Open Active Directory Users and Computers
+1.	Open Server Manager
+2.	Click Tools
+3.	Click Active Directory Users and Computers
+________________________________________
+4. Create Organizational Unit
+1.	Right-click domain:
+jtmk.net
+2.	Click New
+3.	Click Organizational Unit
+4.	Name:
+Project Team
+5.	Click OK.
+________________________________________
+5. Create Groups
+Inside Project Team OU:
+Create group DevTeam:
+1.	Right-click Project Team
+2.	New
+3.	Group
+4.	Group name:
+DevTeam
+5.	Group scope: Global
+6.	Group type: Security
+7.	OK.
+Create group SupportTeam:
+SupportTeam
+Take screenshot.
+________________________________________
+6. Create Users
+Inside Project Team OU, create user Daniel:
+First name: Daniel
+User logon name: Daniel
+Password: P@ssword123
+Untick if needed:
+User must change password at next logon
+Tick:
+Password never expires
+Create user Aisyah:
+First name: Aisyah
+User logon name: Aisyah
+Password: P@ssword123
+Create user Kumar:
+First name: Kumar
+User logon name: Kumar
+Password: P@ssword123
+________________________________________
+7. Assign Users to Groups
+Add Daniel to DevTeam:
+1.	Right-click Daniel
+2.	Properties
+3.	Member Of
+4.	Add
+5.	Type:
+DevTeam
+6.	Check Names
+7.	OK.
+Add Aisyah to SupportTeam:
+SupportTeam
+The question does not clearly state Kumar’s group. You can leave Kumar unassigned or ask lecturer. If you want to show complete user creation only, create Kumar but do not add to group.
+Take screenshot of users and groups.
+________________________________________
+8. Create Shared Folder ProjectShare
+Go to drive C:
+1.	Open File Explorer
+2.	Go to:
+C:\
+3.	Create new folder:
+ProjectShare
+Path:
+C:\ProjectShare
+________________________________________
+9. Configure Sharing Permission
+1.	Right-click ProjectShare
+2.	Click Properties
+3.	Go to Sharing
+4.	Click Advanced Sharing
+5.	Tick:
+Share this folder
+6.	Share name:
+ProjectShare
+7.	Click Permissions
+8.	Remove Everyone if required.
+9.	Add:
+DevTeam
+SupportTeam
+Set permissions:
+DevTeam: Full Control
+SupportTeam: Read
+Click Apply and OK.
+________________________________________
+10. Configure NTFS Security Permission
+1.	Right-click ProjectShare
+2.	Properties
+3.	Security tab
+4.	Edit
+5.	Add:
+DevTeam
+SupportTeam
+Set:
+DevTeam: Full control
+SupportTeam: Read & execute, List folder contents, Read
+Click Apply and OK.
+Take screenshot.
